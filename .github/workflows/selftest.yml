@@ -1,0 +1,25 @@
+name: x402-selftest
+# Free x402 compliance check for ANY x402 service, powered by
+# https://market402.com/selftest (no signup, no payment attached).
+# It verifies: 402 on unpaid GET/bodyless POST, accepts[] schema,
+# network naming (v1 plain name vs v2 CAIP-2), EIP-712 extra, and more.
+# Set SERVICE_URL to your own x402-protected endpoint.
+on:
+  schedule:
+    - cron: "17 3 * * 1"
+  workflow_dispatch: {}
+
+jobs:
+  selftest:
+    runs-on: ubuntu-latest
+    env:
+      SERVICE_URL: https://mart402.dev/v1/extract
+    steps:
+      - name: Probe x402 compliance
+        run: |
+          RES=$(curl -s -X POST https://market402.com/selftest \
+            -H "Content-Type: application/json" \
+            -d "{\"url\": \"$SERVICE_URL\"}")
+          echo "$RES" | python3 -m json.tool
+          FAILED=$(echo "$RES" | python3 -c "import json,sys; print(json.load(sys.stdin)['summary']['failed'])")
+          test "$FAILED" = "0"
