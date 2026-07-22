@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "mart402": {
+      "type": "http",
+      "url": "https://mart402.com/mcp"
+    }
+  }
+}
